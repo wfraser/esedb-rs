@@ -12,7 +12,7 @@ pub struct JetInstance {
 impl JetInstance {
     pub fn new() -> JetInstance {
         JetInstance {
-            instance: 0,
+            instance: JET_instanceNil,
         }
     }
 
@@ -36,5 +36,17 @@ impl JetInstance {
 impl Into<JET_INSTANCE> for JetInstance {
     fn into(self) -> JET_INSTANCE {
         self.instance
+    }
+}
+
+impl Drop for JetInstance {
+    fn drop(&mut self) {
+        if self.instance != JET_instanceNil {
+            unsafe {
+                if jetcall!(JetTerm2(self.instance, JET_bitTermComplete)).is_err() {
+                    jetcall!(JetTerm2(self.instance, JET_bitTermDirty)).unwrap();
+                }
+            }
+        }
     }
 }
