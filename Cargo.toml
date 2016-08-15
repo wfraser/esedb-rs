@@ -1,0 +1,21 @@
+[package]
+name = "esedb"
+version = "0.1.0"
+authors = ["William R. Fraser <wfraser@codewise.org>"]
+
+[dependencies]
+
+[dependencies.esent-sys]
+#branch = "esent-wip"
+#git = "https://github.com/wfraser/winapi-rs"
+#git = "file://D:\\code\\winapi-rs"
+path = "D:/code/winapi-rs/lib/esent"
+
+[dependencies.winapi]
+#branch = "esent-wip"
+#git = "https://github.com/wfraser/winapi-rs"
+#git = "file://D:\\code\\winapi-rs"
+path = "D:/code/winapi-rs"
+
+[dependencies.ole32-sys]
+path = "D:/code/winapi-rs/lib/ole32"
