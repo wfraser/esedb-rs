@@ -1,7 +1,6 @@
 use winapi::*;
 use esent::*;
-use super::strings::*;
-use super::errors::*;
+use super::*;
 
 use std::ptr::null;
 
@@ -29,7 +28,19 @@ impl JetInstance {
     }
 
     pub fn init(&mut self) -> Result<(), JetError> {
-        unsafe { jetcall!(JetInit(&mut self.instance)) }
+        let result = unsafe { jetcall!(JetInit(&mut self.instance)) };
+        if result.is_err() {
+            // init failed; don't try to JetTerm on drop
+            self.instance = JET_instanceNil;
+        }
+        result
+    }
+
+    pub fn create_session<'a>(&'a self) -> Result<JetSession<'a>, JetError> {
+        assert!(self.instance != JET_instanceNil);
+        let mut sesid = JET_sesidNil;
+        unsafe { try!(jetcall!(JetBeginSessionW(self.instance, &mut sesid, null(), null()))); }
+        Ok(JetSession::new(self, sesid))
     }
 }
 
@@ -42,6 +53,7 @@ impl Into<JET_INSTANCE> for JetInstance {
 impl Drop for JetInstance {
     fn drop(&mut self) {
         if self.instance != JET_instanceNil {
+            debug!("dropping JetInstance {}", self.instance);
             unsafe {
                 if jetcall!(JetTerm2(self.instance, JET_bitTermComplete)).is_err() {
                     jetcall!(JetTerm2(self.instance, JET_bitTermDirty)).unwrap();

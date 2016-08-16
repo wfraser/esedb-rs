@@ -1,9 +1,14 @@
 #![allow(non_upper_case_globals)]
 
+#[macro_use] extern crate log;
+
 extern crate winapi;
 extern crate esent;
 
 #[macro_use] mod macros;
+
+mod database;
+pub use database::*;
 
 mod errors;
 pub use errors::*;
@@ -11,8 +16,14 @@ pub use errors::*;
 mod instance;
 pub use instance::*;
 
+mod session;
+pub use session::*;
+
 mod strings;
 pub use strings::*;
+
+mod table;
+pub use table::*;
 
 #[cfg(test)]
 mod test {

@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["William R. Fraser <wfraser@codewise.org>"]
 
 [dependencies]
+log = "0.3.6"
 
 [dependencies.esent-sys]
 #branch = "esent-wip"
@@ -19,3 +20,6 @@ path = "D:/code/winapi-rs"
 
 [dependencies.ole32-sys]
 path = "D:/code/winapi-rs/lib/ole32"
+
+[dev-dependencies]
+env_logger = "0.3.4"
