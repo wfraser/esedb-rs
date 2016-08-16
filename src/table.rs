@@ -59,16 +59,19 @@ impl<'a> JetTable<'a> {
         let mut data: Vec<u8> = vec![];
         let mut len = 0u32;
         unsafe {
-            match jetcall!(JetRetrieveColumn(self.sesid, self.tableid, column_id, null_mut(), 0, &mut len, JET_bitNil, null_mut())) {
-                Err(e) => if e.code != JET_errInvalidBufferSize {
+            match jetcall!(JetRetrieveColumn(
+                    self.sesid, self.tableid, column_id,
+                    null_mut(), 0, &mut len, JET_bitNil, null_mut())) {
+                Err(e) => if e.code != JET_wrnBufferTruncated {
                     return Err(e);
                 },
                 Ok(()) => panic!("expected this call to fail"),
             }
+            data.reserve_exact(len as usize);
+            try!(jetcall!(JetRetrieveColumn(self.sesid, self.tableid, column_id,
+                    transmute(data.as_mut_ptr()), len, &mut len, JET_bitNil, null_mut())));
             data.set_len(len as usize);
-            try!(jetcall!(JetRetrieveColumn(self.sesid, self.tableid, column_id, data.as_mut_ptr() as PVOID, len, &mut len, JET_bitNil, null_mut())));
         }
-        assert_eq!(len as usize, data.len());
         Ok(data)
     }
 
