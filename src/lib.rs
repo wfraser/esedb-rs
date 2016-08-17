@@ -25,6 +25,8 @@ pub use wide_string::*;
 mod table;
 pub use table::*;
 
+mod util;
+
 #[cfg(test)]
 mod test {
     use esent::*;

@@ -1,10 +1,13 @@
 use winapi::*;
 use esent::*;
 
+use std::ffi::OsString;
 use std::mem::{size_of, transmute, uninitialized};
 use std::ptr::null_mut;
+use std::os::windows::ffi::OsStringExt;
 
 use super::*;
+use super::util::*;
 
 pub struct JetTable<'a> {
     _database: &'a JetDatabase<'a>,
@@ -55,7 +58,7 @@ impl<'a> JetTable<'a> {
         self.move_internal(JET_MoveLast, false)
     }
 
-    pub fn retrieve_column(&self, column_id: JET_COLUMNID) -> Result<Vec<u8>, JetError> {
+    pub fn retrieve_column_bytes(&self, column_id: JET_COLUMNID) -> Result<Vec<u8>, JetError> {
         let mut data: Vec<u8> = vec![];
         let mut len = 0u32;
         unsafe {
@@ -76,6 +79,20 @@ impl<'a> JetTable<'a> {
             data.set_len(len as usize);
         }
         Ok(data)
+    }
+
+    pub fn retrieve_string(&self, column_id: JET_COLUMNID) -> Result<OsString, JetError> {
+        let bytes: Vec<u8> = try!(self.retrieve_column_bytes(column_id));
+        let ucs2: &[u16] = unsafe { slice_transmute(&bytes) };
+        let osstring = OsString::from_wide(&ucs2[0..ucs2.len() - 1]); // remove the trailing NUL
+        Ok(osstring)
+    }
+
+    pub fn retrieve_primitive<T: Copy>(&self, column_id: JET_COLUMNID) -> Result<T, JetError> {
+        let bytes: Vec<u8> = try!(self.retrieve_column_bytes(column_id));
+        let of_t: &[T] = unsafe { slice_transmute(&bytes) };
+        assert_eq!(1, of_t.len());
+        Ok(of_t[0])
     }
 
     pub fn get_column_id(&self, column_name: &WideString) -> Result<JET_COLUMNID, JetError> {
