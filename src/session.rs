@@ -26,7 +26,6 @@ impl<'a> JetSession<'a> {
 
     pub fn open_database<'b>(&'b mut self, path: &WideString, mode: DatabaseAccessMode)
             -> Result<JetDatabase<'b>, JetError> {
-        println!("{:?}", path);
         let mut dbid = JET_dbidNil;
         unsafe {
             let bit = match mode {

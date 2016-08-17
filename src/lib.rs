@@ -10,8 +10,8 @@ extern crate esent;
 mod database;
 pub use database::*;
 
-mod errors;
-pub use errors::*;
+mod error;
+pub use error::*;
 
 mod instance;
 pub use instance::*;
@@ -19,8 +19,8 @@ pub use instance::*;
 mod session;
 pub use session::*;
 
-mod strings;
-pub use strings::*;
+mod wide_string;
+pub use wide_string::*;
 
 mod table;
 pub use table::*;

@@ -62,8 +62,11 @@ impl<'a> JetTable<'a> {
             match jetcall!(JetRetrieveColumn(
                     self.sesid, self.tableid, column_id,
                     null_mut(), 0, &mut len, JET_bitNil, null_mut())) {
-                Err(e) => if e.code != JET_wrnBufferTruncated {
-                    return Err(e);
+                Err(e) => match e.code {
+                    JET_wrnBufferTruncated => (),
+                    // TODO: maybe this should return Result<Option<Vec... instead
+                    JET_wrnColumnNull => return Ok(data), // return empty vector
+                    _ => return Err(e),
                 },
                 Ok(()) => panic!("expected this call to fail"),
             }
