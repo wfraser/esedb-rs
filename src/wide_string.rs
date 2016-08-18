@@ -52,6 +52,6 @@ impl From<String> for WideString {
 
 impl<'a> From<&'a WideString> for OsString {
     fn from(s: &WideString) -> OsString {
-        OsString::from_wide(&s.ucs2)
+        OsString::from_wide(&s.ucs2[0..s.ucs2.len() - 1]) // remove the trailing NUL
     }
 }

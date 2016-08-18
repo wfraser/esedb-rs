@@ -22,15 +22,18 @@ impl<'a> JetDatabase<'a> {
     }
 
     pub fn open_table<'b>(&'b self, tablename: &WideString) -> Result<JetTable<'b>, JetError> {
+        debug!("opening JetTable {:?}", tablename);
         let mut tableid = JET_tableidNil;
-        unsafe { try!(jetcall!(JetOpenTableW(self.sesid, self.dbid, tablename.as_ptr(), null(), 0, JET_bitNil, &mut tableid))); }
+        unsafe { jettry!(JetOpenTableW(self.sesid, self.dbid, tablename.as_ptr(), null(), 0,
+                                       JET_bitNil, &mut tableid)); }
+        debug!("opened JetTable {:?} = {:x}", tablename, tableid);
         Ok(JetTable::new(self.session, self, tableid))
     }
 }
 
 impl<'a> Drop for JetDatabase<'a> {
     fn drop(&mut self) {
-        debug!("dropping JetDatabase {}", self.dbid);
+        debug!("closing JetDatabase {:x}", self.dbid);
         unsafe { jetcall!(JetCloseDatabase(self.sesid, self.dbid, JET_bitNil)).unwrap() }
     }
 }

@@ -75,8 +75,8 @@ impl<'a> JetTable<'a> {
                 Ok(()) => panic!("expected this call to fail"),
             }
             data.reserve_exact(len as usize);
-            try!(jetcall!(JetRetrieveColumn(self.sesid, self.tableid, column_id,
-                    transmute(data.as_mut_ptr()), len, &mut len, JET_bitNil, null_mut())));
+            jettry!(JetRetrieveColumn(self.sesid, self.tableid, column_id,
+                    transmute(data.as_mut_ptr()), len, &mut len, JET_bitNil, null_mut()));
             data.set_len(len as usize);
         }
         Ok(data)
@@ -100,7 +100,8 @@ impl<'a> JetTable<'a> {
         unsafe {
             let mut info: JET_COLUMNDEF = uninitialized();
             info.cbStruct = size_of::<JET_COLUMNDEF>() as u32;
-            try!(jetcall!(JetGetTableColumnInfoW(self.sesid, self.tableid, column_name.as_ptr(), transmute(&mut info), info.cbStruct, JET_ColInfo)));
+            jettry!(JetGetTableColumnInfoW(self.sesid, self.tableid, column_name.as_ptr(),
+                    transmute(&mut info), info.cbStruct, JET_ColInfo));
             Ok(info.columnid)
         }
     }
@@ -108,7 +109,7 @@ impl<'a> JetTable<'a> {
 
 impl<'a> Drop for JetTable<'a> {
     fn drop(&mut self) {
-        debug!("dropping table {}", self.tableid);
+        debug!("closing JetTable {:x}", self.tableid);
         unsafe { jetcall!(JetCloseTable(self.sesid, self.tableid)).unwrap() }
     }
 }

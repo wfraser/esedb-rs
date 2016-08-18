@@ -27,15 +27,17 @@ impl<'a> JetSession<'a> {
 
     pub fn open_database<'b>(&'b mut self, path: &WideString, mode: DatabaseAccessMode)
             -> Result<JetDatabase<'b>, JetError> {
+        debug!("attaching+opening JetDatabase from {:?}", path);
         let mut dbid = JET_dbidNil;
         unsafe {
             let bit = match mode {
                 DatabaseAccessMode::ReadOnly => JET_bitDbReadOnly,
                 DatabaseAccessMode::ReadWrite => JET_bitNil,
             };
-            try!(jetcall!(JetAttachDatabaseW(self.sesid, path.as_ptr(), bit)));
-            try!(jetcall!(JetOpenDatabaseW(self.sesid, path.as_ptr(), null(), &mut dbid, JET_bitNil)));
+            jettry!(JetAttachDatabaseW(self.sesid, path.as_ptr(), bit));
+            jettry!(JetOpenDatabaseW(self.sesid, path.as_ptr(), null(), &mut dbid, JET_bitNil));
         }
+        debug!("opened JetDatabase {:?} = {:x}", path, dbid);
         Ok(JetDatabase::new(self, dbid))
     }
 
@@ -46,7 +48,7 @@ impl<'a> JetSession<'a> {
 
 impl<'a> Drop for JetSession<'a> {
     fn drop(&mut self) {
-        debug!("dropping JetSession {}", self.sesid);
+        debug!("ending JetSession {:x}", self.sesid);
         unsafe { jetcall!(JetEndSession(self.sesid, JET_bitNil)).unwrap(); }
     }
 }
