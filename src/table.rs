@@ -2,6 +2,7 @@ use winapi::*;
 use esent::*;
 
 use std::ffi::OsString;
+use std::marker::PhantomData;
 use std::mem::{size_of, transmute, uninitialized};
 use std::ptr::null_mut;
 use std::os::windows::ffi::OsStringExt;
@@ -10,17 +11,17 @@ use super::*;
 use super::util::*;
 
 pub struct JetTable<'a> {
-    _database: &'a JetDatabase<'a>,
+    _lifetime: PhantomData<&'a JetDatabase<'a>>,
     sesid: JET_SESID,
     tableid: JET_TABLEID,
 }
 
 impl<'a> JetTable<'a> {
-    pub fn new<'b>(session: &'b JetSession<'b>, database: &'a JetDatabase<'a>, tableid: JET_TABLEID)
+    pub fn new<'b>(session: &'b JetSession<'b>, _database: &'a JetDatabase<'a>, tableid: JET_TABLEID)
             -> JetTable<'a> {
         let sesid = unsafe { session.raw() };
         JetTable {
-            _database: database,
+            _lifetime: PhantomData,
             sesid: sesid,
             tableid: tableid,
         }
@@ -91,7 +92,7 @@ impl<'a> JetTable<'a> {
     pub fn retrieve_primitive<T: Copy>(&self, column_id: JET_COLUMNID) -> Result<T, JetError> {
         let bytes: Vec<u8> = try!(self.retrieve_column_bytes(column_id));
         let of_t: &[T] = unsafe { slice_transmute(&bytes) };
-        assert_eq!(1, of_t.len());
+        assert_eq!(1, of_t.len()); // if there's more than one, then the size is wrong
         Ok(of_t[0])
     }
 

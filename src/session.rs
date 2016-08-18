@@ -3,10 +3,11 @@ use esent::*;
 
 use super::*;
 
+use std::marker::PhantomData;
 use std::ptr::null;
 
 pub struct JetSession<'a> {
-    _instance: &'a JetInstance,
+    _lifetime: PhantomData<&'a JetInstance>,
     sesid: JET_SESID,
 }
 
@@ -16,10 +17,10 @@ pub enum DatabaseAccessMode {
 }
 
 impl<'a> JetSession<'a> {
-    pub fn new(instance: &'a JetInstance, sesid: JET_SESID) -> JetSession<'a> {
+    pub fn new(_instance: &'a JetInstance, sesid: JET_SESID) -> JetSession<'a> {
         assert!(sesid != JET_sesidNil);
         JetSession {
-            _instance: instance,
+            _lifetime: PhantomData,
             sesid: sesid,
         }
     }
