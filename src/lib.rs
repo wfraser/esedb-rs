@@ -5,6 +5,9 @@
 extern crate winapi;
 extern crate esent;
 
+// re-export the constants and types for esent-sys
+pub use winapi::esent::*;
+
 #[macro_use] mod macros;
 
 mod database;

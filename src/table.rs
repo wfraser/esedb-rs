@@ -1,4 +1,3 @@
-use winapi::*;
 use esent::*;
 
 use std::ffi::OsString;
