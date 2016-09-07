@@ -10,6 +10,15 @@ impl WideString {
     pub fn as_ptr(&self) -> *const u16 {
         self.ucs2.as_ptr()
     }
+    pub fn len(&self) -> usize {
+        self.ucs2.len()
+    }
+    pub fn as_ucs2_slice(&self) -> &[u16] {
+        self.ucs2.as_slice()
+    }
+    pub fn to_string_lossy(&self) -> String {
+        OsString::from(self).to_string_lossy().into_owned()
+    }
 }
 
 impl fmt::Display for WideString {
@@ -27,7 +36,7 @@ impl fmt::Debug for WideString {
 impl<'a> From<&'a OsStr> for WideString {
     fn from(s: &OsStr) -> WideString {
         WideString {
-            ucs2: s.encode_wide().chain(Some(0).into_iter()).collect()
+            ucs2: s.encode_wide().chain(Some(0).into_iter()).collect()  // add trailing NUL
         }
     }
 }
@@ -47,6 +56,15 @@ impl<'a> From<&'a str> for WideString {
 impl From<String> for WideString {
     fn from(s: String) -> WideString {
         WideString::from(OsStr::new(&s))
+    }
+}
+
+impl From<Vec<u16>> for WideString {
+    fn from(ucs2: Vec<u16>) -> WideString {
+        assert_eq!(0, ucs2[ucs2.len() - 1]);
+        WideString {
+            ucs2: ucs2
+        }
     }
 }
 
