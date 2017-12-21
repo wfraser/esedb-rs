@@ -3,15 +3,22 @@ use super::*;
 
 use std::ptr::null;
 
+#[derive(Debug)]
 pub struct JetInstance {
     instance: JET_INSTANCE,
 }
 
-impl JetInstance {
-    pub fn new() -> JetInstance {
+impl Default for JetInstance {
+    fn default() -> Self {
         JetInstance {
             instance: JET_instanceNil,
         }
+    }
+}
+
+impl JetInstance {
+    pub fn new() -> JetInstance {
+        Self::default()
     }
 
     pub fn init_engine(&mut self, name: &WideString) -> Result<(), JetError> {
@@ -49,7 +56,7 @@ impl JetInstance {
         }
     }
 
-    pub fn create_session<'a>(&'a self) -> Result<JetSession<'a>, JetError> {
+    pub fn create_session(&self) -> Result<JetSession, JetError> {
         debug!("creating new JetSession");
         assert!(self.instance != JET_instanceNil);
         let mut sesid = JET_sesidNil;

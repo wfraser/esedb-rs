@@ -5,11 +5,13 @@ use super::*;
 use std::marker::PhantomData;
 use std::ptr::null;
 
+#[derive(Debug)]
 pub struct JetSession<'a> {
     _lifetime: PhantomData<&'a JetInstance>,
     sesid: JET_SESID,
 }
 
+#[derive(Debug, Copy, Clone)]
 pub enum DatabaseAccessMode {
     ReadOnly,
     ReadWrite,

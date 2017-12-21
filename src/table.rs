@@ -8,6 +8,7 @@ use std::ptr::{null, null_mut};
 use super::*;
 use super::util::*;
 
+#[derive(Debug)]
 pub struct JetTable<'a> {
     _lifetime: PhantomData<&'a JetDatabase<'a>>,
     sesid: JET_SESID,
@@ -177,6 +178,7 @@ impl<'a> JetTable<'a> {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
 pub enum SeekType {
     Equal,
     EqualOnly,      // also sets the index range to only match the specified key

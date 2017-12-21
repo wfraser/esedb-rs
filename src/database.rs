@@ -4,6 +4,7 @@ use std::ptr::null;
 
 use super::*;
 
+#[derive(Debug)]
 pub struct JetDatabase<'a> {
     session: &'a JetSession<'a>,
     sesid: JET_SESID,

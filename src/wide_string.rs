@@ -2,6 +2,7 @@ use std::ffi::{OsStr, OsString};
 use std::fmt;
 use std::os::windows::ffi::{OsStrExt, OsStringExt};
 
+#[derive(Clone)]
 pub struct WideString {
     ucs2: Vec<u16>,
 }
@@ -9,6 +10,9 @@ pub struct WideString {
 impl WideString {
     pub fn as_ptr(&self) -> *const u16 {
         self.ucs2.as_ptr()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ucs2.is_empty()
     }
     pub fn len(&self) -> usize {
         self.ucs2.len()
