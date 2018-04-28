@@ -22,7 +22,7 @@ impl<'a> JetSession<'a> {
         assert!(sesid != JET_sesidNil);
         JetSession {
             _lifetime: PhantomData,
-            sesid: sesid,
+            sesid,
         }
     }
 

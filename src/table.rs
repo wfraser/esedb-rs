@@ -21,8 +21,8 @@ impl<'a> JetTable<'a> {
         let sesid = unsafe { session.raw() };
         JetTable {
             _lifetime: PhantomData,
-            sesid: sesid,
-            tableid: tableid,
+            sesid,
+            tableid,
         }
     }
 

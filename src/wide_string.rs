@@ -67,7 +67,7 @@ impl From<Vec<u16>> for WideString {
     fn from(ucs2: Vec<u16>) -> WideString {
         assert_eq!(0, ucs2[ucs2.len() - 1]);
         WideString {
-            ucs2: ucs2
+            ucs2,
         }
     }
 }

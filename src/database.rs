@@ -15,9 +15,9 @@ impl<'a> JetDatabase<'a> {
     pub fn new(session: &'a JetSession<'a>, dbid: JET_DBID) -> JetDatabase<'a> {
         let sesid = unsafe { session.raw() };
         JetDatabase {
-            session: session,
-            sesid: sesid,
-            dbid: dbid,
+            session,
+            sesid,
+            dbid,
         }
     }
 

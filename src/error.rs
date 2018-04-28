@@ -42,7 +42,7 @@ pub struct JetError {
 impl From<JET_ERR> for JetError {
     fn from(code: JET_ERR) -> JetError {
         JetError {
-            code: code,
+            code,
             text: get_text(code).unwrap_or("[no error text]"),
         }
     }
