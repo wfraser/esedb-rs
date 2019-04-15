@@ -1,8 +1,10 @@
+// Extensible Storage Engine database library for Rust
+// Copyright 2016-2019 by William R. Fraser
+
 use esent::*;
+use super::*;
 
 use std::ptr::null;
-
-use super::*;
 
 #[derive(Debug)]
 pub struct JetDatabase<'a> {

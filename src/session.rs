@@ -1,5 +1,7 @@
-use esent::*;
+// Extensible Storage Engine database library for Rust
+// Copyright 2016-2019 by William R. Fraser
 
+use esent::*;
 use super::*;
 
 use std::marker::PhantomData;

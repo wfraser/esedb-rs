@@ -1,3 +1,6 @@
+//! Extensible Storage Engine database library for Rust
+//! Copyright 2016-2019 by William R. Fraser
+
 #![allow(non_upper_case_globals)]
 
 #[macro_use] extern crate log;

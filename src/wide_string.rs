@@ -1,3 +1,6 @@
+// Extensible Storage Engine database library for Rust
+// Copyright 2016-2019 by William R. Fraser
+
 use std::ffi::{OsStr, OsString};
 use std::fmt;
 use std::os::windows::ffi::{OsStrExt, OsStringExt};
