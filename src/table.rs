@@ -1,8 +1,9 @@
 use esent::*;
+use winapi::c_void;
 
 use std::ffi::OsString;
 use std::marker::PhantomData;
-use std::mem::{size_of, transmute, uninitialized};
+use std::mem::{size_of, uninitialized};
 use std::ptr::{null, null_mut};
 
 use super::*;
@@ -78,7 +79,7 @@ impl<'a> JetTable<'a> {
             assert_eq!(0, nbytes as usize % size_of::<T>());
             data.reserve_exact(nbytes as usize / size_of::<T>());
             jettry!(JetRetrieveColumn(self.sesid, self.tableid, column_id,
-                    transmute(data.as_mut_ptr()), nbytes, null_mut(), JET_bitNil, null_mut()));
+                    data.as_mut_ptr() as *mut c_void, nbytes, null_mut(), JET_bitNil, null_mut()));
             data.set_len(nbytes as usize / size_of::<T>());
         }
         Ok(data)
@@ -97,8 +98,9 @@ impl<'a> JetTable<'a> {
         unsafe {
             let mut data: T = uninitialized();
             let mut actual_bytes = 0;
-            jettry!(JetRetrieveColumn(self.sesid, self.tableid, column_id, transmute(&mut data),
-                    size_of::<T>() as u32, &mut actual_bytes, JET_bitNil, null_mut()));
+            jettry!(JetRetrieveColumn(self.sesid, self.tableid, column_id,
+                    &mut data as *mut _ as *mut c_void, size_of::<T>() as u32, &mut actual_bytes,
+                    JET_bitNil, null_mut()));
             assert_eq!(size_of::<T>() as u32, actual_bytes);
             Ok(data)
         }
@@ -109,7 +111,7 @@ impl<'a> JetTable<'a> {
             let mut info: JET_COLUMNDEF = uninitialized();
             info.cbStruct = size_of::<JET_COLUMNDEF>() as u32;
             jettry!(JetGetTableColumnInfoW(self.sesid, self.tableid, column_name.as_ptr(),
-                    transmute(&mut info), info.cbStruct, JET_ColInfo));
+                    &mut info as *mut _ as *mut c_void, info.cbStruct, JET_ColInfo));
             Ok(info.columnid)
         }
     }
@@ -130,7 +132,7 @@ impl<'a> JetTable<'a> {
         };
 
         unsafe {
-            jettry!(JetMakeKey(self.sesid, self.tableid, transmute(data.as_ptr()),
+            jettry!(JetMakeKey(self.sesid, self.tableid, data.as_ptr() as *const c_void,
                     data.len() as u32, JET_bitNewKey));
             match JetSeek(self.sesid, self.tableid, seek_grbit) {
                 JET_errSuccess => Ok(true),
@@ -157,8 +159,8 @@ impl<'a> JetTable<'a> {
 
     fn update_internal(&self, column_id: JET_COLUMNID, data: &[u8]) -> Result<(), JetError> {
         unsafe {
-            jetcall!(JetSetColumn(self.sesid, self.tableid, column_id, transmute(data.as_ptr()),
-                    data.len() as u32, JET_bitNil, null()))
+            jetcall!(JetSetColumn(self.sesid, self.tableid, column_id,
+                    data.as_ptr() as *const c_void, data.len() as u32, JET_bitNil, null()))
         }
     }
 

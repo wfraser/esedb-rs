@@ -1,5 +1,4 @@
 #![allow(non_upper_case_globals)]
-#![allow(unknown_lints, useless_transmute)]
 
 #[macro_use] extern crate log;
 

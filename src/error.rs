@@ -2,6 +2,7 @@
 
 use esent::*;
 use winapi;
+use winapi::c_void;
 use winapi::esent::*;
 
 use std::collections::BTreeMap;
@@ -54,8 +55,8 @@ impl Display for JetError {
             let mut info = mem::zeroed::<JET_ERRINFOBASIC_W>();
             info.cbStruct = mem::size_of::<JET_ERRINFOBASIC_W>() as winapi::ULONG;
             let err = JetGetErrorInfoW(
-                mem::transmute(&self.code),
-                mem::transmute(&mut info),
+                &self.code as *const _ as *const c_void,
+                &mut info as *mut _ as *mut c_void,
                 info.cbStruct,
                 JET_ErrorInfoSpecificErr,
                 JET_bitNil,
