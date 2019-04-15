@@ -1,7 +1,7 @@
 // Extensible Storage Engine database library for Rust
 // Copyright 2016-2019 by William R. Fraser
 
-use esent::*;
+use winapi::um::esent::*;
 use super::*;
 
 use std::ptr::null;

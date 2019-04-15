@@ -6,10 +6,10 @@
 #[macro_use] extern crate log;
 
 extern crate winapi;
-extern crate esent;
+//extern crate esent;
 
 // re-export the constants and types for esent-sys
-pub use winapi::esent::*;
+pub use winapi::um::esent::*;
 
 #[macro_use] mod macros;
 
@@ -35,8 +35,7 @@ mod util;
 
 #[cfg(test)]
 mod test {
-    use esent::*;
-    use winapi::esent::*;
+    use winapi::um::esent::*;
     use super::*;
 
     #[test]

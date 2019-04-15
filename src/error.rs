@@ -3,10 +3,8 @@
 
 #![allow(non_upper_case_globals)]
 
-use esent::*;
-use winapi;
-use winapi::c_void;
-use winapi::esent::*;
+use winapi::ctypes::{c_ulong, c_void};
+use winapi::um::esent::*;
 
 use std::collections::BTreeMap;
 use std::error::Error;
@@ -56,7 +54,7 @@ impl Display for JetError {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), fmt::Error> {
         unsafe {
             let mut info = mem::zeroed::<JET_ERRINFOBASIC_W>();
-            info.cbStruct = mem::size_of::<JET_ERRINFOBASIC_W>() as winapi::ULONG;
+            info.cbStruct = mem::size_of::<JET_ERRINFOBASIC_W>() as c_ulong;
             let err = JetGetErrorInfoW(
                 &self.code as *const _ as *const c_void,
                 &mut info as *mut _ as *mut c_void,

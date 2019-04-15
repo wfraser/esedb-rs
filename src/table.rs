@@ -1,8 +1,8 @@
 // Extensible Storage Engine database library for Rust
 // Copyright 2016-2019 by William R. Fraser
 
-use esent::*;
-use winapi::c_void;
+use winapi::um::esent::*;
+use winapi::ctypes::c_void;
 
 use super::*;
 use super::util::*;

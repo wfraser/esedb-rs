@@ -4,14 +4,9 @@ version = "0.1.0"
 authors = ["William R. Fraser <wfraser@codewise.org>"]
 
 [dependencies]
-log = "0.3.6"
-#winapi = "0.2.8"
-#esent-sys = "0.1.0"
-
-[dependencies.esent-sys]
-branch = "esent-wip"
-git = "https://github.com/wfraser/winapi-rs"
+log = "0.4"
 
 [dependencies.winapi]
-branch = "esent-wip"
+branch = "0.3-esent"
 git = "https://github.com/wfraser/winapi-rs"
+features = ["esent"]
