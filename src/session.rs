@@ -44,6 +44,9 @@ impl<'a> JetSession<'a> {
         Ok(JetDatabase::new(self, dbid))
     }
 
+    /// # Safety
+    /// If the value returned is stored, it is unsafe to use after this JetSession instance has
+    /// been dropped.
     pub unsafe fn raw(&self) -> JET_SESID {
         self.sesid
     }

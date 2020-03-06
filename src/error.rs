@@ -10,10 +10,10 @@ use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::mem;
-use std::sync::{Once, ONCE_INIT};
+use std::sync::Once;
 
 static mut ERROR_TEXT: *const BTreeMap<JET_ERR, &'static str> = 0 as *const BTreeMap<_, _>;
-static ERROR_TEXT_ONCE: Once = ONCE_INIT;
+static ERROR_TEXT_ONCE: Once = Once::new();
 
 fn get_text(code: JET_ERR) -> Option<&'static str> {
     unsafe {
@@ -81,7 +81,7 @@ impl Display for JetError {
                     JET_errcatUsage => "programmer",
                     JET_errcatState => "database state",
                     JET_errcatObsolete => "[obsolete error]",
-                    JET_errcatMax | _ => unreachable!(),
+                    _ => unreachable!(),
                 };
                 write!(fmt, "ESE DB {} error: {} (code {})", cat, self.text, self.code)
             } else {

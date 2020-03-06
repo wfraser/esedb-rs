@@ -9,7 +9,7 @@ use super::util::*;
 
 use std::ffi::OsString;
 use std::marker::PhantomData;
-use std::mem::{size_of, uninitialized};
+use std::mem::{size_of, MaybeUninit};
 use std::ptr::{null, null_mut};
 
 #[derive(Debug)]
@@ -30,6 +30,9 @@ impl<'a> JetTable<'a> {
         }
     }
 
+    /// # Safety
+    /// If the value returned is stored, it is unsafe to use after this JetTable instance has been
+    /// dropped.
     pub unsafe fn raw(&self) -> JET_TABLEID {
         self.tableid
     }
@@ -89,7 +92,7 @@ impl<'a> JetTable<'a> {
     }
 
     pub fn retrieve_wstring(&self, column_id: JET_COLUMNID) -> Result<WideString, JetError> {
-        let ucs2: Vec<u16> = try!(self.retrieve_column_bytes(column_id));
+        let ucs2: Vec<u16> = self.retrieve_column_bytes(column_id)?;
         Ok(WideString::from(ucs2))
     }
 
@@ -99,7 +102,7 @@ impl<'a> JetTable<'a> {
 
     pub fn retrieve<T: Copy>(&self, column_id: JET_COLUMNID) -> Result<T, JetError> {
         unsafe {
-            let mut data: T = uninitialized();
+            let mut data = MaybeUninit::<T>::zeroed().assume_init();
             let mut actual_bytes = 0;
             jettry!(JetRetrieveColumn(self.sesid, self.tableid, column_id,
                     &mut data as *mut _ as *mut c_void, size_of::<T>() as u32, &mut actual_bytes,
@@ -111,7 +114,7 @@ impl<'a> JetTable<'a> {
 
     pub fn get_column_id(&self, column_name: &WideString) -> Result<JET_COLUMNID, JetError> {
         unsafe {
-            let mut info: JET_COLUMNDEF = uninitialized();
+            let mut info = MaybeUninit::<JET_COLUMNDEF>::zeroed().assume_init();
             info.cbStruct = size_of::<JET_COLUMNDEF>() as u32;
             jettry!(JetGetTableColumnInfoW(self.sesid, self.tableid, column_name.as_ptr(),
                     &mut info as *mut _ as *mut c_void, info.cbStruct, JET_ColInfo));
